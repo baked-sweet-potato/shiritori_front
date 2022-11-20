@@ -34,9 +34,9 @@ import { AutoDraft } from '@chatscope/use-chat/dist/enums/AutoDraft'
 // This allows you to omit doing this manually, but you need to provide a message generator
 // The message id generator is a function that receives message and returns id for this message
 // The group id generator is a function that returns string
-const messageIdGenerator = (message: ChatMessage<MessageContentType>) =>
+const messageIdGenerator = (message: ChatMessage<MessageContentType>) : string =>
   nanoid()
-const groupIdGenerator = () => nanoid()
+const groupIdGenerator = () : string => nanoid()
 
 const akaneStorage = new BasicStorage({ groupIdGenerator, messageIdGenerator })
 const eliotStorage = new BasicStorage({ groupIdGenerator, messageIdGenerator })
@@ -44,7 +44,7 @@ const emilyStorage = new BasicStorage({ groupIdGenerator, messageIdGenerator })
 const joeStorage = new BasicStorage({ groupIdGenerator, messageIdGenerator })
 
 // Create serviceFactory
-const serviceFactory = (storage: IStorage, updateState: UpdateState) => {
+const serviceFactory = (storage: IStorage, updateState: UpdateState): ExampleChatService => {
   return new ExampleChatService(storage, updateState)
 }
 
@@ -166,7 +166,7 @@ chats.forEach((c) => {
   })
 })
 
-export const App = () => {
+export const App = () : JSX.Element => {
   return (
     <div className="h-100 d-flex flex-column overflow-hidden">
       <Container
