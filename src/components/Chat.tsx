@@ -18,6 +18,8 @@ import {
   MessageStatus
 , MessageContent, TextContent, User } from '@chatscope/use-chat'
 import { chats } from '../data/data'
+import Echo from 'laravel-echo'
+import Pusher from 'pusher-js'
 
 export const Chat = ({ user }: { user: User }) : JSX.Element =>  {
   const {
@@ -31,7 +33,29 @@ export const Chat = ({ user }: { user: User }) : JSX.Element =>  {
     currentMessage,
     setCurrentMessage,
     sendTyping,
-  } = useChat()
+  } = useChat();
+
+  (window as any).Pusher = Pusher;
+
+  (window as any).Echo = new Echo({
+    broadcaster: 'pusher',
+    key: import.meta.env.VITE_PUSHER_APP_KEY,
+    // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+    wsHost: `ws-${import.meta.env.VITE_PUSHER_APP_CLUSTER}.pusher.com`,
+    wsPort: import.meta.env.VITE_PUSHER_PORT ?? 80,
+    wssPort: import.meta.env.VITE_PUSHER_PORT ?? 443,
+    forceTLS: (import.meta.env.VITE_PUSHER_SCHEME ?? 'https') === 'https',
+    enabledTransports: ['ws', 'wss']
+  });
+
+  (window as any).Echo.channel('post-added-channel').listen(
+    'PostAdded',
+    function (data: any) {
+      console.log('received a message')
+      console.log(data)
+    }
+  )
+
 
   // 初期表示
   useEffect(() => {

@@ -78,29 +78,32 @@ const myConversation = myselfStorage
   .getState()
   .conversations.find(
     (cv) =>
-      typeof cv.participants.find((p) => p.id === partnerModel.name) !== 'undefined'
+      typeof cv.participants.find((p) => p.id === partnerModel.name) !==
+      'undefined'
   )
 if (myConversation == null) {
-  myselfStorage.addConversation(createConversation(conversationId, partnerModel.name))
+  myselfStorage.addConversation(
+    createConversation(conversationId, partnerModel.name)
+  )
 
-    const hisConversation = myselfStorage
-      .getState()
-      .conversations.find(
-        (cv) =>
-          typeof cv.participants.find((p) => p.id === partnerModel.name) !==
-          'undefined'
-      )
-    if (hisConversation == null) {
-      myselfStorage.addConversation(
-        createConversation(conversationId, partnerModel.name)
-      )
-    }
+  const hisConversation = myselfStorage
+    .getState()
+    .conversations.find(
+      (cv) =>
+        typeof cv.participants.find((p) => p.id === partnerModel.name) !==
+        'undefined'
+    )
+  if (hisConversation == null) {
+    myselfStorage.addConversation(
+      createConversation(conversationId, partnerModel.name)
+    )
+  }
 }
 
 export const App = (): JSX.Element => {
   const [ip, setIp] = useState('')
 
-  const getIp = async () :Promise<void> => {
+  const getIp = async (): Promise<void> => {
     // fetchを使ってipapi.coに接続
     const response = await fetch('https://ipapi.co/json/')
     const data = await response.json()
