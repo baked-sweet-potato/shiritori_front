@@ -21,8 +21,9 @@ import { ExampleChatService } from '@chatscope/use-chat/dist/examples'
 import { Chat } from './components/Chat'
 import { nanoid } from 'nanoid'
 import { Col, Container, Row } from 'react-bootstrap'
-import { myselfModel, partnerModel } from './data/data'
+import { partnerModel } from './data/data'
 import { AutoDraft } from '@chatscope/use-chat/dist/enums/AutoDraft'
+import { useEffect, useState } from 'react'
 
 const messageIdGenerator = (message: ChatMessage<MessageContentType>): string =>
   nanoid()
@@ -37,18 +38,6 @@ const serviceFactory = (
 ): ExampleChatService => {
   return new ExampleChatService(storage, updateState)
 }
-
-// ユーザー
-const myself = new User({
-  id: myselfModel.name,
-  presence: new Presence({ status: UserStatus.Available, description: '' }),
-  firstName: '',
-  lastName: '',
-  username: myselfModel.name,
-  email: '',
-  avatar: '',
-  bio: ''
-})
 
 // 会話スペース作成関数
 function createConversation(id: ConversationId, name: string): Conversation {
@@ -109,6 +98,32 @@ if (myConversation == null) {
 }
 
 export const App = (): JSX.Element => {
+  const [ip, setIp] = useState('')
+
+  const getIp = async () :Promise<void> => {
+    // fetchを使ってipapi.coに接続
+    const response = await fetch('https://ipapi.co/json/')
+    const data = await response.json()
+    // 取得したIPアドレスを、定数`ip`にセット
+    setIp(data.ip)
+  }
+
+  // 関数`getIP`を初回レンダリングでのみ発動させる
+  useEffect(() => {
+    void getIp()
+  }, [])
+
+  const myself = new User({
+    id: ip,
+    presence: new Presence({ status: UserStatus.Available, description: '' }),
+    firstName: '',
+    lastName: '',
+    username: ip,
+    email: '',
+    avatar: '',
+    bio: ''
+  })
+
   return (
     <div className="h-100 d-flex flex-column overflow-hidden">
       <Container

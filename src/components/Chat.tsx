@@ -17,6 +17,7 @@ import {
   MessageDirection,
   MessageStatus
 , MessageContent, TextContent, User } from '@chatscope/use-chat'
+import { chats } from '../data/data'
 
 export const Chat = ({ user }: { user: User }) : JSX.Element =>  {
   const {
@@ -24,6 +25,7 @@ export const Chat = ({ user }: { user: User }) : JSX.Element =>  {
     conversations,
     activeConversation,
     setActiveConversation,
+    addMessage,
     sendMessage,
     getUser,
     currentMessage,
@@ -34,6 +36,22 @@ export const Chat = ({ user }: { user: User }) : JSX.Element =>  {
   // 初期表示
   useEffect(() => {
     setActiveConversation(conversations[0].id)
+
+    chats.forEach((chat) => {
+      const chatMessage = new ChatMessage({
+        id: '',
+        content: chat.content as unknown as MessageContent<TextContent>,
+        contentType: MessageContentType.TextHtml,
+        senderId: chat.sender,
+        direction:
+          chat.sender === user.id
+            ? MessageDirection.Outgoing
+            : MessageDirection.Incoming,
+        status: MessageStatus.Sent
+      })
+
+      addMessage(chatMessage, activeConversation?.id, true)
+    })
   }, [])
 
   const handleChange = (value: string) : void => {
@@ -104,7 +122,7 @@ export const Chat = ({ user }: { user: User }) : JSX.Element =>  {
                       model={{
                         type: 'html',
                         payload: message.content,
-                        direction: message.direction,
+                        direction: user.id === message.senderId ? MessageDirection.Outgoing : MessageDirection.Incoming,
                         position: 'normal'
                       }}
                     />
